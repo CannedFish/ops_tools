@@ -1,0 +1,84 @@
+# e.g. ansible-playbook create_user_with_sudo.yml -e "target_hosts=anjian_test username=ajtest"
+---
+- name: check env
+  hosts: localhost
+  any_errors_fatal: true
+  become: false
+
+  tasks:
+    # Check version of ansible
+    - name: assert ansible version
+      assert:
+        that:
+          - "{{ ansible_version.string | version_compare('2.2', '>=') }}"
+        msg: Ansible 2.2 or above is required
+
+    # Ckeck pwgen
+    - name: probe pwgen
+      command: pwgen -h
+      register: pwgen_present
+      failed_when: 0
+    - name: assert pwgen installed
+      assert: 
+        that:
+          - pwgen_present.rc == 1
+        msg: pwgen is required (apt install pwgen)
+
+    # Check expect module
+    - name: look up python-pexpect version
+      command: dpkg-query --showformat='${Version}' --show python-pexpect
+      register: pexpect_version
+      failed_when: 0
+    - name: assert python-pexpect version
+      assert:
+        that:
+          - "{{ pexpect_version.rc == 0 }}"
+          - "{{ pexpect_version.stdout | version_compare('3.3', '>=') }}"
+        msg: python-pexpect 3.3 or above is required
+
+    # Check mkpasswd
+    - name: probe mkpasswd
+      command: mkpasswd --version
+      register: mkpasswd_present
+      failed_when: 0
+    - name: assert mkpasswd installed
+      assert: 
+        that:
+          - mkpasswd_present.rc == 0
+        msg: mkpasswd is required (apt install whois)
+
+- name: create user with sudo previlege
+  hosts: "{{ target_hosts }}"
+  become: false
+  any_errors_fatal: true
+  serial: 1
+
+  tasks:
+    - name: generate new password
+      delegate_to: localhost
+      command: pwgen -N 1 -cn 10
+      register: new_pwd
+
+    - name: "save password {{ new_pwd.stdout }} for {{ inventory_hostname }}"
+      delegate_to: localhost
+      shell: echo "{{ inventory_hostname }}" "{{ new_pwd.stdout }}" >> "/home/cloud-user/change_password/{{ username }}_pwd.out"
+
+    - name: "generate password hash for {{ inventory_hostname }}"
+      delegate_to: localhost
+      expect:
+        command: mkpasswd --method=sha-512
+        responses:
+          (?i)password: "{{ new_pwd.stdout }}"
+      register: password_hash
+
+    - name: change password for cloud-user
+      become: true
+      user:
+        name: "{{ username }}"
+        password: "{{ password_hash.stdout_lines[-1] }}"
+        shell: /bin/bash
+        generate_ssh_key: yes
+        
+    - name: to be a sudoer
+      become: true
+      shell: "echo '{{ username }} ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers"

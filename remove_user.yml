@@ -1,0 +1,31 @@
+# e.g. ansible-playbook remove_user.yml -e "target_hosts=anjian_test username=ajtest"
+---
+- name: check env
+  hosts: localhost
+  any_errors_fatal: true
+  become: false
+
+  tasks:
+    # Check version of ansible
+    - name: assert ansible version
+      assert:
+        that:
+          - "{{ ansible_version.string | version_compare('2.2', '>=') }}"
+        msg: Ansible 2.2 or above is required
+        
+- name: create user with sudo previlege
+  hosts: "{{ target_hosts }}"
+  become: false
+  any_errors_fatal: true
+
+  tasks:
+    - name: change password for cloud-user
+      become: true
+      user:
+        name: "{{ username }}"
+        state: absent
+        remove: yes
+        
+    - name: remove from sudoers
+      become: true
+      shell: "sed -i '/{{ username }}/d' /etc/sudoers"
