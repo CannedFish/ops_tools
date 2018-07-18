@@ -1,3 +1,4 @@
+# e.g. ansible-playbook change_pwd.yml
 ---
 - name: check env
   hosts: localhost
