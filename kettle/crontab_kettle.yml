@@ -1,0 +1,24 @@
+---
+- name: crontab for kettle nodes
+  hosts: kettle_master
+  user: cloud-user
+  tasks:
+    - name: add crontab -e
+      cron: name="crontab for kettle" minute="*" job="/bin/bash /home/cloud-user/kettle/cron_kettle_master_start.sh >/dev/null 2>&1" user="cloud-user"
+- name: crontab for kettle nodes
+  hosts: kettle_slave
+  user: cloud-user
+  tasks:
+    - name: add crontab -e
+      cron: name="crontab for kettle" minute="*" job="/bin/bash /home/cloud-user/kettle/cron_kettle_slave_start.sh >/dev/null 2>&1" user="cloud-user"
+- name: crontab for kettle nodes
+  hosts: kettle
+  user: cloud-user
+  sudo: yes
+  tasks:
+    - name: service cron stop
+      shell: service cron stop
+    - name: service cron reload
+      shell: service cron reload
+    - name: service cron start
+      shell: service cron start

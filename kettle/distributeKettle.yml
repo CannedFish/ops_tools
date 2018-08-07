@@ -1,0 +1,11 @@
+---
+- name: distribute kettle content on all flume agent
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    #- name: cp /home/cloud-user/pdi-ce-7.1.0.0-12.zip to all flume nodes
+    #  copy: src=/home/cloud-user/pdi-ce-7.1.0.0-12.zip dest=/home/cloud-user/pdi-ce-7.1.0.0-12.zip
+    - name: unzip kettle.zip
+      shell: unzip /home/cloud-user/pdi-ce-7.1.0.0-12.zip
+      args:
+        excutable: /bin/bash

@@ -1,0 +1,13 @@
+---
+- name: kettle started on boot
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    # - name: mkdir /home/cloud-user/kettle
+    #   shell: mkdir /home/cloud-user/kettle
+    - name: cp cron_kettle_start.sh to all kettle node
+      copy: src="{{item}}" dest="{{item}}" mode=0777
+      with_items:
+        - /home/cloud-user/kettle/cron_kettle_master_start.sh
+        - /home/cloud-user/kettle/cron_kettle_slave_start.sh
+        - /home/cloud-user/kettle/cron_kettle_stop.sh

@@ -1,0 +1,13 @@
+---
+- name: set log for carte
+  hosts: kettle
+  user: cloud-user
+  sudo: yes
+  tasks:
+    - name: mkdir /var/log/carte
+      shell:  mkdir /var/log/carte
+    - name: chown choud-user:cloud-user  /var/log/carte
+      shell: chown -R cloud-user:cloud-user  /var/log/carte
+    - name: distribute log4j.xml
+      copy: src=/home/cloud-user/kettle/log4j.xml dest=/home/cloud-user/data-integration/plugins/kettle5-log4j-plugin/
+    

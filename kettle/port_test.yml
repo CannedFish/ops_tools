@@ -1,0 +1,14 @@
+---
+- name: port_test
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: test 10.11.100.96
+      shell: nc -z 10.11.100.96 1521
+    - name: test 10.11.100.196
+      shell: nc -z 10.11.100.196 1521
+    - name: test 10.11.100.240
+      shell: nc -z 10.11.100.240 1521
+    - name: test 10.11.100.249
+      shell: nc -z 10.11.100.249 1521
+

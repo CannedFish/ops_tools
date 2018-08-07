@@ -1,0 +1,10 @@
+---
+- name: sudo ./home/cloud-user/data-integration/kitchen.sh
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: run ./home/cloud-user/data-integration/kitchen.sh
+      shell: sh /home/cloud-user/data-integration/kitchen.sh
+      environment:
+        JAVA_HOME: /usr/java/jdk1.8.0_131
+      ignore_errors: True

@@ -1,0 +1,7 @@
+---
+- name: deploy ifxjdbc.jar for carte
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: distribute ifxjdbc.jar
+      copy: src=/home/cloud-user/kettle/ifxjdbc.jar dest=/home/cloud-user/data-integration/lib/ifxjdbc.jar    

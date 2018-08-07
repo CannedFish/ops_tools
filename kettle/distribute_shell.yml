@@ -1,0 +1,9 @@
+---
+- name: distribute shell file
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: cp cron_kettle_master_start.sh to all kettle nodes
+      copy: src=/home/cloud-user/kettle/cron_kettle_master_start.sh dest=/home/cloud-user/kettle/cron_kettle_master_start.sh
+    - name: cp cron_kettle_master_start.sh to all kettle nodes
+      copy: src=/home/cloud-user/kettle/cron_kettle_slave_start.sh dest=/home/cloud-user/kettle/cron_kettle_slave_start.sh

@@ -1,0 +1,53 @@
+---
+- name: edit kettle.config
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: backup config file
+      shell: cp "{{item}}" "{{item}}".bak
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-8081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8084.xml'
+    - name: rm 19'th carte-config-808* in /data-integration/data-integration/pwd/
+      shell: sed -i '19d'  "{{item}}"
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-8081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8084.xml'
+    - name: add       <hostname>bigdata-5</hostname> to
+      shell: sed '18 a\      <hostname>bigdata-5</hostname>' -i "{{item}}"
+    #  lineinfile: 
+    #    dest: '{{item}}'
+    #    regexp: '*<name>master1</name>'
+    #    insertbefore: '*<port>8080</port>'
+    #    line: '       <hostname>bigdata-7</hostname>'
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-8081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8084.xml'
+    # - name: delete last line
+    #   shell: sed -i '$d'   '{{item}}'
+    #   with_items:
+    #     - '/home/cloud-user/pwd/carte-config-8081.xml'
+    #     - '/home/cloud-user/pwd/carte-config-8082.xml'
+    #     - '/home/cloud-user/pwd/carte-config-8083.xml'
+    #     - '/home/cloud-user/pwd/carte-config-8084.xml'
+    - name: rm 32'th carte-config-808* in /data-integration/pwd/
+      shell: sed -i '32d'  "{{item}}"
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-8081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8084.xml'
+    - name:  add       <hostname>the_hostname</hostname> to
+      shell: sed '31 a\    <hostname>{{ansible_hostname}}</hostname>' -i "{{item}}"
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-8081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8084.xml'
+

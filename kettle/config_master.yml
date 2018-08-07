@@ -1,0 +1,10 @@
+---
+- name: edit kettle.config
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: localhost to local hostname
+      shell: sed -i 's/bigdata-5/{{ansible_hostname}}/g'  "{{item}}"
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-master-18080.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-master-8080.xml'

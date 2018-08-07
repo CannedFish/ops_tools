@@ -1,0 +1,21 @@
+---
+- name: edit kettle.config
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: backup config file
+      shell: cp "{{item}}" "{{item.replace('808','1808')}}"
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-master-8080.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-8084.xml'
+    - name: 808 to 1808
+      shell: sed -i 's/808/1808/g'  "{{item}}"
+      with_items:
+        - '/home/cloud-user/data-integration/pwd/carte-config-master-18080.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-18081.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-18082.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-18083.xml'
+        - '/home/cloud-user/data-integration/pwd/carte-config-18084.xml'

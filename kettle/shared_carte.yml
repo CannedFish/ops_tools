@@ -1,0 +1,7 @@
+---
+- name: deploy db info for carte
+  hosts: kettle
+  user: cloud-user
+  tasks:
+    - name: distribute log4j.xml
+      copy: src=/home/cloud-user/kettle/shared.xml dest=/home/cloud-user/.kettle/shared.xml    
