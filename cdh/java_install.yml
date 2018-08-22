@@ -1,0 +1,24 @@
+# e.g. ansible-playbook java_install.yml
+---
+- name: Install java from cache
+  hosts: cdh-test
+  become: true
+
+  tasks:
+    - name: Create destination directory
+      file: 
+        path: /home/ubuntu/debs
+        owner: ubuntu
+        group: ubuntu
+        mode: 0775
+        state: directory
+
+    - name: Transform deb packages
+      copy:
+        src: /var/cache/apt/archives/
+        dest: /home/ubuntu/debs/
+        owner: ubuntu
+        group: ubuntu
+        mode: 0644
+        directory_mode: yes
+
