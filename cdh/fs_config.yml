@@ -1,0 +1,16 @@
+# e.g. ansible-playbook fs_config.yml -e "tar_hosts=cdh-test"
+---
+- name: Configure Ext4 filesystem
+  hosts: {{ tar_hosts }}
+  become: true
+
+  tasks:
+    - name: Get disk devices
+
+    - name: Update configuration with mount module
+      shell: |
+        sudo umount {{ item.mp }}
+        sudo mount -o data=writeback,inode_readahead_blks=128,noatime,nodev {{ item.dev }} {{ item.mp }}
+      loop:
+        - { dev: '', mp: '' }
+

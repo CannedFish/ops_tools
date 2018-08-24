@@ -6,7 +6,7 @@
 
   tasks:
     - name: Create destination directory
-      file: 
+      file:
         path: /home/ubuntu/debs
         owner: ubuntu
         group: ubuntu
