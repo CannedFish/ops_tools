@@ -1,16 +1,40 @@
-# e.g. ansible-playbook fs_config.yml -e "tar_hosts=cdh-test"
+# e.g. ansible-playbook fs_config.yml -e "tar_hosts=cdh-test debug=0 disk=vd"
 ---
 - name: Configure Ext4 filesystem
-  hosts: {{ tar_hosts }}
+  hosts: "{{ tar_hosts }}"
+  # hosts: localhost
   become: true
+  vars:
+    debug: 0
+    disk: "sd"
 
   tasks:
     - name: Get disk devices
+      shell: "ls /dev | grep {{ disk }}[b-z]1"
+      register: devs
+      ignore_errors: True
+
+    - debug:
+        var: devs
+      when: debug == "1"
+
+    - name: Generate dev/path pairs
+      set_fact:
+        dev_path: "{{ dev_path|default([]) + [{'dev': '/dev/'+item, 'path': '/dfs'+(idx+1)|string}] }}"
+      loop: "{{ devs.stdout_lines }}"
+      loop_control:
+        index_var: idx
+
+    - debug:
+        var: dev_path
+      when: debug == "1"
 
     - name: Update configuration with mount module
-      shell: |
-        sudo umount {{ item.mp }}
-        sudo mount -o data=writeback,inode_readahead_blks=128,noatime,nodev {{ item.dev }} {{ item.mp }}
-      loop:
-        - { dev: '', mp: '' }
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.dev }}"
+        fstype: ext4
+        opts: defaults,data=writeback,inode_readahead_blks=128,noatime,nodev
+        state: mounted
+      loop: "{{ dev_path }}"
 
