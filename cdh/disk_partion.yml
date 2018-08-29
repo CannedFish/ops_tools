@@ -1,0 +1,32 @@
+# e.g. ansible-playbook disk_partition.yml -e "tar_hosts=cdh-test debug=1 disk=vd"
+---
+- name: Block device partition
+  hosts: "{{ tar_hosts }}"
+  become: true
+  vars:
+    debug: 0
+    disk: "sd"
+
+  tasks:
+    - name: Get block devices
+      shell: "ls /dev | grep {{ disk }}[b-z]$"
+      register: devs
+      ignore_errors: True
+
+    - debug:
+        var: devs
+      when: debug == "1"
+
+    - name: Disk partition
+      parted:
+        device: "/dev/{{ item }}"
+        number: 1
+        state: present
+      loop: "{{ devs.stdout_lines }}"
+
+    - name: Make file system
+      filesystem:
+        fstype: ext4
+        dev: "/dev/{{ item }}1"
+      loop: "{{ devs.stdout_lines }}"
+

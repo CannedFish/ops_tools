@@ -1,4 +1,4 @@
-# e.g. ansible-playbook fs_config.yml -e "tar_hosts=cdh-test debug=0 disk=vd"
+# e.g. ansible-playbook fs_config.yml -e "tar_hosts=cdh-test debug=1 disk=vd"
 ---
 - name: Configure Ext4 filesystem
   hosts: "{{ tar_hosts }}"
@@ -28,6 +28,15 @@
     - debug:
         var: dev_path
       when: debug == "1"
+
+    - name: Make sure mount point exists
+      file:
+        path: "{{ item.path }}"
+        owner: root
+        group: root
+        mode: 755
+        state: directory
+      loop: "{{ dev_path }}"
 
     - name: Update configuration with mount module
       mount:
