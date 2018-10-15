@@ -1,0 +1,45 @@
+# e.g. ansible-playbook network_config.yml -e "target_hosts=self conf_path=/etc/network/interfaces"
+---
+- name: Check env
+  hosts: localhost
+  any_errors_fatal: true
+  become: false
+
+  tasks:
+    # Check version of ansible
+    - name: assert ansible version
+      assert:
+        that:
+          - "{{ ansible_version.string | version_compare('2.0', '>=') }}"
+        msg: Ansible 2.0 or above is required
+
+- name: Make configuration
+  hosts: "{{ target_hosts }}"
+  become: true
+
+  tasks:
+    - name: Backup old configs
+      command: "mv {{ conf_path }} {{ conf_path }}.bak"
+
+    - name: Create new configs
+      copy:
+        dest: "{{ conf_path }}"
+        mode: 0644
+        content: |
+          auto lo
+          iface lo inet loopback
+
+          source-directory interfaces.d
+
+          auto eno1
+          iface eno1 inet dhcp
+
+          auto eno2
+          iface eno2 inet dhcp
+
+          auto enp5s0f1
+          iface enp5s0f1 inet static
+              address {{ ansible_default_ipv4.address }}
+              netmask 255.255.255.0
+              gateway 10.11.129.1
+
