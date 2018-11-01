@@ -1,0 +1,27 @@
+# e.g. ansible-playbook network_config.yml -e "target_hosts=manager"
+---
+- name: Check env
+  hosts: localhost
+  any_errors_fatal: true
+  become: false
+
+  tasks:
+    # Check version of ansible
+    - name: assert ansible version
+      assert:
+        that:
+          - "{{ ansible_version.string | version_compare('2.0', '>=') }}"
+        msg: Ansible 2.0 or above is required
+
+- name: Check net interfaces status
+  hosts: {{ target_hosts }}
+
+  tasks:
+    - name: Get status
+      command: "ip address | grep 'status UP'"
+      register: net_status
+
+    - name: Save status result
+      delegate_to: localhost
+      shell: echo "{{ inventory_hostname }}:\n" "{{ net_status.stdout }}" >> /home/cloud-user/net_interface_status.out
+
